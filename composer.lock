@@ -3147,16 +3147,16 @@
         },
         {
             "name": "rlanvin/php-rrule",
-            "version": "v2.2.0",
+            "version": "v2.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rlanvin/php-rrule.git",
-                "reference": "931d53d162cd84b46f6fa388cb4ea916bec02c18"
+                "reference": "4e979ff9b1122e7b5f4b4faf87a000396af12d16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rlanvin/php-rrule/zipball/931d53d162cd84b46f6fa388cb4ea916bec02c18",
-                "reference": "931d53d162cd84b46f6fa388cb4ea916bec02c18",
+                "url": "https://api.github.com/repos/rlanvin/php-rrule/zipball/4e979ff9b1122e7b5f4b4faf87a000396af12d16",
+                "reference": "4e979ff9b1122e7b5f4b4faf87a000396af12d16",
                 "shasum": ""
             },
             "require": {
@@ -3164,7 +3164,7 @@
             },
             "require-dev": {
                 "phpmd/phpmd": "@stable",
-                "phpunit/phpunit": "^4.8|^5.5|^6.5"
+                "phpunit/phpunit": "^5.7|^6.5|^8.0"
             },
             "suggest": {
                 "ext-intl": "Intl extension is needed for humanReadable()"
@@ -3190,9 +3190,9 @@
             ],
             "support": {
                 "issues": "https://github.com/rlanvin/php-rrule/issues",
-                "source": "https://github.com/rlanvin/php-rrule/tree/v2.2.0"
+                "source": "https://github.com/rlanvin/php-rrule/tree/v2.2.2"
             },
-            "time": "2019-11-01T11:51:17+00:00"
+            "time": "2021-01-09T13:20:09+00:00"
         },
         {
             "name": "sabre/dav",
@@ -6541,5 +6541,5 @@
     "platform-overrides": {
         "php": "7.2.0"
     },
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
