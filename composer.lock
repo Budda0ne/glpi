@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8b31ae62bc60e9f2bd0396c3814fa68f",
+    "content-hash": "3800ceb1da033b3fc7ec8621a0655653",
     "packages": [
         {
             "name": "blueimp/jquery-file-upload",
@@ -165,24 +165,24 @@
         },
         {
             "name": "elvanto/litemoji",
-            "version": "2.0.4",
+            "version": "3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elvanto/litemoji.git",
-                "reference": "7b64216805bc746f46be648b18cffbd813f6086a"
+                "reference": "acd6fd944814683983dcdfcf4d33f24430631b77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elvanto/litemoji/zipball/7b64216805bc746f46be648b18cffbd813f6086a",
-                "reference": "7b64216805bc746f46be648b18cffbd813f6086a",
+                "url": "https://api.github.com/repos/elvanto/litemoji/zipball/acd6fd944814683983dcdfcf4d33f24430631b77",
+                "reference": "acd6fd944814683983dcdfcf4d33f24430631b77",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6"
+                "php": ">=7.0"
             },
             "require-dev": {
-                "milesj/emojibase": "6.0.0",
-                "phpunit/phpunit": "^5.0"
+                "milesj/emojibase": "6.0.*",
+                "phpunit/phpunit": "^6.0"
             },
             "type": "library",
             "autoload": {
@@ -201,9 +201,9 @@
             ],
             "support": {
                 "issues": "https://github.com/elvanto/litemoji/issues",
-                "source": "https://github.com/elvanto/litemoji/tree/2.0.4"
+                "source": "https://github.com/elvanto/litemoji/tree/3.0.1"
             },
-            "time": "2020-11-10T08:58:16+00:00"
+            "time": "2020-11-27T05:08:33+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -6541,5 +6541,5 @@
     "platform-overrides": {
         "php": "7.2.0"
     },
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
