@@ -205,17 +205,56 @@ abstract class CommonITILObject extends CommonDBTM {
     * @return boolean
     */
    function canAddFollowups() {
-      return ((Session::haveRight("followup", ITILFollowup::ADDMYTICKET)
-               && ($this->isUser(CommonITILActor::REQUESTER, Session::getLoginUserID())
-                   || (isset($this->fields["users_id_recipient"])
-                        && ($this->fields["users_id_recipient"] == Session::getLoginUserID()))))
-              || Session::haveRight('followup', ITILFollowup::ADDALLTICKET)
-              || (Session::haveRight('followup', ITILFollowup::ADDGROUPTICKET)
-                  && isset($_SESSION["glpigroups"])
-                  && $this->haveAGroup(CommonITILActor::REQUESTER, $_SESSION['glpigroups']))
-              || $this->isUser(CommonITILActor::ASSIGN, Session::getLoginUserID())
-              || (isset($_SESSION["glpigroups"])
-                  && $this->haveAGroup(CommonITILActor::ASSIGN, $_SESSION['glpigroups'])));
+      return (
+         (
+            Session::haveRight("followup", ITILFollowup::ADDMYTICKET)
+            && (
+               $this->isUser(CommonITILActor::REQUESTER, Session::getLoginUserID())
+               || (
+                  isset($this->fields["users_id_recipient"])
+                  && ($this->fields["users_id_recipient"] == Session::getLoginUserID())
+               )
+            )
+         )
+         || Session::haveRight('followup', ITILFollowup::ADDALLTICKET)
+         || (
+            Session::haveRight('followup', ITILFollowup::ADDGROUPTICKET)
+            && isset($_SESSION["glpigroups"])
+            && $this->haveAGroup(CommonITILActor::REQUESTER, $_SESSION['glpigroups'])
+         )
+         || $this->isUser(CommonITILActor::ASSIGN, Session::getLoginUserID())
+         || (
+            isset($_SESSION["glpigroups"])
+            && $this->haveAGroup(CommonITILActor::ASSIGN, $_SESSION['glpigroups'])
+         )
+         || $this->isValidator(Session::getLoginUserID())
+      );
+   }
+
+   /**
+    * Check if the given users is a validator
+    * @param int $users_id
+    * @return bool
+    */
+   public function isValidator($users_id): bool {
+      if (!$users_id) {
+         // Invalid parameter
+         return false;
+      }
+
+      if (!$this instanceof Ticket && !$this instanceof Change) {
+         // Not a valid validation target
+         return false;
+      }
+
+      $validation_class = static::class . "Validation";
+      $valitation_obj = new $validation_class;
+      $validation_requests = $valitation_obj->find([
+         getForeignKeyFieldForItemType(static::class) => $this->getID(),
+         'users_id_validate' => $users_id,
+      ]);
+
+      return count($validation_requests) > 0;
    }
 
 
@@ -1298,11 +1337,21 @@ abstract class CommonITILObject extends CommonDBTM {
 
       // Manage come back to waiting state
       if (!is_null($this->fields['begin_waiting_date'])
-          && (($key = array_search('status', $this->updates)) !== false)
-          && (($this->oldvalues['status'] == self::WAITING)
-               // From solved to another state than closed
-              || (in_array($this->oldvalues["status"], $this->getSolvedStatusArray())
-                  && !in_array($this->fields["status"], $this->getClosedStatusArray())))) {
+         && ($key = array_search('status', $this->updates)) !== false
+         && (
+            $this->oldvalues['status'] == self::WAITING
+            // From solved to another state than closed
+            || (
+               in_array($this->oldvalues["status"], $this->getSolvedStatusArray())
+               && !in_array($this->fields["status"], $this->getClosedStatusArray())
+            )
+            // From closed to any open state
+            || (
+               in_array($this->oldvalues["status"], $this->getClosedStatusArray())
+               && in_array($this->fields["status"], $this->getNotSolvedStatusArray())
+            )
+         )
+      ) {
 
          // Compute ticket waiting time use calendar if exists
          $calendar     = new Calendar();
@@ -5164,7 +5213,7 @@ abstract class CommonITILObject extends CommonDBTM {
       if (isset($this->fields['takeintoaccount_delay_stat'])) {
          echo "<tr class='tab_bg_2'><td>".__('Take into account')."</td><td>";
          if ($this->fields['takeintoaccount_delay_stat'] > 0) {
-            echo Html::timestampToString($this->fields['takeintoaccount_delay_stat'], 0);
+            echo Html::timestampToString($this->fields['takeintoaccount_delay_stat'], 0, false);
          } else {
             echo '&nbsp;';
          }
@@ -5176,7 +5225,7 @@ abstract class CommonITILObject extends CommonDBTM {
          echo "<tr class='tab_bg_2'><td>".__('Resolution')."</td><td>";
 
          if ($this->fields['solve_delay_stat'] > 0) {
-            echo Html::timestampToString($this->fields['solve_delay_stat'], 0);
+            echo Html::timestampToString($this->fields['solve_delay_stat'], 0, false);
          } else {
             echo '&nbsp;';
          }
@@ -5186,7 +5235,7 @@ abstract class CommonITILObject extends CommonDBTM {
       if (in_array($this->fields['status'], $this->getClosedStatusArray())) {
          echo "<tr class='tab_bg_2'><td>".__('Closure')."</td><td>";
          if ($this->fields['close_delay_stat'] > 0) {
-            echo Html::timestampToString($this->fields['close_delay_stat']);
+            echo Html::timestampToString($this->fields['close_delay_stat'], true, false);
          } else {
             echo '&nbsp;';
          }
@@ -5195,7 +5244,7 @@ abstract class CommonITILObject extends CommonDBTM {
 
       echo "<tr class='tab_bg_2'><td>".__('Pending')."</td><td>";
       if ($this->fields['waiting_duration'] > 0) {
-         echo Html::timestampToString($this->fields['waiting_duration'], 0);
+         echo Html::timestampToString($this->fields['waiting_duration'], 0, false);
       } else {
          echo '&nbsp;';
       }
@@ -7924,7 +7973,7 @@ abstract class CommonITILObject extends CommonDBTM {
 
             $categ = new ITILCategory();
             if ($categ->getFromDB($newitilcategories_id)) {
-               $field = $this->getTemplateFieldName($type);
+               $field = $this->getTemplateFieldName($newtype);
 
                if (isset($categ->fields[$field]) && $categ->fields[$field]) {
                   // without type and categ
